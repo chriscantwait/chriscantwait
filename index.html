@@ -32,7 +32,7 @@ html, body {
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  background: radial-gradient(circle at 50% 45%, rgba(0,0,0,0.12), rgba(0,0,0,0.82));
+  background: radial-gradient(circle at 50% 45%, rgba(0,0,0,0.15), rgba(0,0,0,0.85));
 }
 
 #noise {
@@ -40,8 +40,8 @@ html, body {
   inset: 0;
   z-index: 2;
   pointer-events: none;
-  opacity: 0.22;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='260' height='260' filter='url(%23n)' opacity='.4'/%3E%3C/svg%3E");
+  opacity: 0.18;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='260' height='260' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E");
 }
 
 #scanlines {
@@ -49,7 +49,7 @@ html, body {
   inset: 0;
   z-index: 3;
   pointer-events: none;
-  opacity: 0.12;
+  opacity: 0.10;
   background: repeating-linear-gradient(
     to bottom,
     rgba(255,255,255,0.03),
@@ -59,7 +59,7 @@ html, body {
   );
 }
 
-/* Center stage */
+/* Click stage */
 #stage {
   position: fixed;
   inset: 0;
@@ -70,60 +70,30 @@ html, body {
   user-select: none;
 }
 
-/* === TEXT STACK === */
+/* Name stack */
 #name-stack {
-  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
   text-align: center;
 }
 
 .name {
   font-size: clamp(28px, 4vw, 48px);
   letter-spacing: 0.14em;
-  font-weight: 600;
+  font-weight: 500;
   text-transform: lowercase;
-  color: rgba(255,255,255,0.96);
-  position: relative;
+  color: rgba(255,255,255,0.92);
 }
 
-/* top echo */
-.name.top {
-  position: absolute;
-  left: 0;
-  right: 0;
-  transform: translateY(-10px);
-  opacity: 0.25;
+.name.faint {
+  opacity: 0.35;
 }
 
-/* bottom echo */
-.name.bottom {
-  position: absolute;
-  left: 0;
-  right: 0;
-  transform: translateY(10px);
-  opacity: 0.25;
-}
-
-/* main text glow / light */
-.name.main {
-  text-shadow:
-    0 0 32px rgba(255,255,255,0.18),
-    0 0 12px rgba(255,255,255,0.12),
-    0 0 2px rgba(255,255,255,0.4);
-}
-
-/* faint ambient light bloom behind text */
-#name-stack::after {
-  content: "";
-  position: absolute;
-  inset: -40px;
-  background: radial-gradient(circle at center, rgba(255,255,255,0.06), transparent 70%);
-  z-index: -1;
-}
-
-/* Subtle hint bottom-left */
+/* Bottom-left hint */
 #hint {
   position: fixed;
-  bottom: 18px;
+  bottom: 16px;
   left: 18px;
   z-index: 11;
   font-size: 12px;
@@ -144,26 +114,31 @@ html, body {
 
 <body>
 
+  <!-- Video -->
   <video id="bg" autoplay muted loop playsinline preload="auto">
     <source src="background.mp4" type="video/mp4">
   </video>
 
+  <!-- Overlays -->
   <div id="vignette"></div>
   <div id="noise"></div>
   <div id="scanlines"></div>
 
+  <!-- Audio -->
   <audio id="music" loop preload="auto">
     <source src="song.mp3" type="audio/mpeg">
   </audio>
 
+  <!-- Center text -->
   <div id="stage">
     <div id="name-stack">
-      <div class="name top">chris cant wait</div>
-      <div class="name main">chris cant wait</div>
-      <div class="name bottom">chris cant wait</div>
+      <div class="name faint">chris cant wait</div>
+      <div class="name">chris cant wait</div>
+      <div class="name faint">chris cant wait</div>
     </div>
   </div>
 
+  <!-- Hint -->
   <div id="hint">tap / click for sound</div>
 
 <script>
