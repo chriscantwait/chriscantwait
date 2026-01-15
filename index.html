@@ -16,65 +16,139 @@ html, body {
 }
 
 /* Fullscreen video */
-video {
+#bg {
   position: fixed;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  z-index: -3;
-  filter: brightness(0.75) contrast(1.05);
+  z-index: -5;
+  filter: brightness(0.75) contrast(1.05) saturate(0.95);
 }
 
-/* VHS grain */
-body::after {
-  content: "";
+/* VHS vignette */
+#vignette{
   position: fixed;
   inset: 0;
+  z-index: -4;
   pointer-events: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='.4'/%3E%3C/svg%3E");
-  opacity: 0.18;
-  z-index: -1;
+  background: radial-gradient(circle at 50% 45%, rgba(0,0,0,0.05), rgba(0,0,0,0.80));
 }
 
-/* Center text */
+/* VHS noise (stronger + animated) */
+#noise{
+  position: fixed;
+  inset: 0;
+  z-index: -3;
+  pointer-events: none;
+  opacity: 0.28;              /* stronger */
+  mix-blend-mode: overlay;    /* visible on bright + dark areas */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.95' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='260' height='260' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
+  animation: noiseMove 0.9s steps(6) infinite; /* more VHS-y */
+}
+
+@keyframes noiseMove{
+  0% { transform: translate(0,0); }
+  20% { transform: translate(-1%, 0.5%); }
+  40% { transform: translate(0.6%, -0.6%); }
+  60% { transform: translate(1%, 0.8%); }
+  80% { transform: translate(-0.6%, -0.8%); }
+  100% { transform: translate(0,0); }
+}
+
+/* Scanlines */
+#scanlines{
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  opacity: 0.22; /* stronger */
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.03),
+    rgba(255,255,255,0.03) 1px,
+    rgba(0,0,0,0) 4px,
+    rgba(0,0,0,0) 8px
+  );
+  mix-blend-mode: overlay;
+}
+
+/* Tracking bar */
+#track{
+  position: fixed;
+  left: -20%;
+  right: -20%;
+  top: 10%;
+  height: 3px;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.35;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+  animation: trackMove 6.5s infinite;
+}
+
+@keyframes trackMove{
+  0% { transform: translateY(-40px); opacity: 0; }
+  10% { opacity: 0.35; }
+  60% { transform: translateY(320px); opacity: 0.20; }
+  100% { transform: translateY(520px); opacity: 0; }
+}
+
+/* Center text (ONLY text on page) */
 #stage {
   position: fixed;
   inset: 0;
   display: grid;
   place-items: center;
-  color: white;
-  font-size: 20px;
-  letter-spacing: 0;
-  text-transform: lowercase;
   cursor: pointer;
+  user-select: none;
+}
+
+#name {
+  color: rgba(255,255,255,0.92);
+  font-size: 22px;
+  text-transform: lowercase;
+  /* subtle CRT glow */
+  text-shadow: 0 0 14px rgba(255,255,255,0.12);
+  /* tiny VHS jitter */
+  animation: jitter 7s infinite;
+}
+
+@keyframes jitter{
+  0%, 92%, 100% { transform: translate(0,0); }
+  93% { transform: translate(0.8px, -0.4px); }
+  94% { transform: translate(0,0); }
+  96% { transform: translate(-0.7px, 0.5px); }
+  97% { transform: translate(0,0); }
 }
 </style>
 </head>
 
 <body>
+  <video id="bg" autoplay muted loop playsinline preload="auto">
+    <source src="background.mp4" type="video/mp4">
+  </video>
 
-<video autoplay muted loop playsinline preload="auto">
-  <source src="background.mp4" type="video/mp4">
-</video>
+  <div id="vignette"></div>
+  <div id="noise"></div>
+  <div id="scanlines"></div>
+  <div id="track"></div>
 
-<audio id="music" loop>
-  <source src="song.mp3" type="audio/mpeg">
-</audio>
+  <audio id="music" loop preload="auto">
+    <source src="song.mp3" type="audio/mpeg">
+  </audio>
 
-<div id="stage">
-  chris cant wait
-</div>
+  <div id="stage">
+    <div id="name">chris cant wait</div>
+  </div>
 
 <script>
-const music = document.getElementById("music");
-const stage = document.getElementById("stage");
+  const music = document.getElementById("music");
+  const stage = document.getElementById("stage");
 
-stage.addEventListener("click", async () => {
-  try {
-    await music.play();
-  } catch(e){}
-});
+  stage.addEventListener("click", async () => {
+    try { await music.play(); } catch(e) {}
+  });
 </script>
 
 </body>
