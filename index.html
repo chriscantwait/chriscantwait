@@ -23,7 +23,6 @@ html, body {
   height: 100%;
   object-fit: cover;
   z-index: 0;
-  background: #000;
   filter: brightness(0.78) contrast(1.05) saturate(0.95);
 }
 
@@ -33,7 +32,7 @@ html, body {
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  background: radial-gradient(circle at 50% 45%, rgba(0,0,0,0.08), rgba(0,0,0,0.82));
+  background: radial-gradient(circle at 50% 45%, rgba(0,0,0,0.12), rgba(0,0,0,0.82));
 }
 
 #noise {
@@ -41,19 +40,8 @@ html, body {
   inset: 0;
   z-index: 2;
   pointer-events: none;
-  opacity: 0.26;
-  mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.95' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='260' height='260' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
-  animation: noiseMove .9s steps(6) infinite;
-}
-
-@keyframes noiseMove {
-  0% { transform: translate(0,0); }
-  20% { transform: translate(-1%, .5%); }
-  40% { transform: translate(.6%, -.6%); }
-  60% { transform: translate(1%, .8%); }
-  80% { transform: translate(-.6%, -.8%); }
-  100% { transform: translate(0,0); }
+  opacity: 0.22;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='260' height='260' filter='url(%23n)' opacity='.4'/%3E%3C/svg%3E");
 }
 
 #scanlines {
@@ -61,8 +49,7 @@ html, body {
   inset: 0;
   z-index: 3;
   pointer-events: none;
-  opacity: 0.18;
-  mix-blend-mode: overlay;
+  opacity: 0.12;
   background: repeating-linear-gradient(
     to bottom,
     rgba(255,255,255,0.03),
@@ -72,7 +59,7 @@ html, body {
   );
 }
 
-/* Click-anywhere stage */
+/* Center stage */
 #stage {
   position: fixed;
   inset: 0;
@@ -83,69 +70,80 @@ html, body {
   user-select: none;
 }
 
-/* Main name */
-#name {
-  color: rgba(255,255,255,0.96);
-  font-size: clamp(26px, 4vw, 44px);
-  letter-spacing: 0.12em;
-  font-weight: 700;
+/* === TEXT STACK === */
+#name-stack {
+  position: relative;
+  text-align: center;
+}
+
+.name {
+  font-size: clamp(28px, 4vw, 48px);
+  letter-spacing: 0.14em;
+  font-weight: 600;
   text-transform: lowercase;
+  color: rgba(255,255,255,0.96);
+  position: relative;
+}
+
+/* top echo */
+.name.top {
+  position: absolute;
+  left: 0;
+  right: 0;
+  transform: translateY(-10px);
+  opacity: 0.25;
+}
+
+/* bottom echo */
+.name.bottom {
+  position: absolute;
+  left: 0;
+  right: 0;
+  transform: translateY(10px);
+  opacity: 0.25;
+}
+
+/* main text glow / light */
+.name.main {
   text-shadow:
-    0 0 28px rgba(255,255,255,0.14),
-    0 0 2px rgba(255,255,255,0.30);
-  animation: titleJitter 9s infinite;
+    0 0 32px rgba(255,255,255,0.18),
+    0 0 12px rgba(255,255,255,0.12),
+    0 0 2px rgba(255,255,255,0.4);
 }
 
-@keyframes titleJitter {
-  0%, 92%, 100% { transform: translate(0,0); }
-  93% { transform: translate(0.8px, -0.4px); }
-  94% { transform: translate(0,0); }
-  96% { transform: translate(-0.6px, 0.5px); }
-  97% { transform: translate(0,0); }
+/* faint ambient light bloom behind text */
+#name-stack::after {
+  content: "";
+  position: absolute;
+  inset: -40px;
+  background: radial-gradient(circle at center, rgba(255,255,255,0.06), transparent 70%);
+  z-index: -1;
 }
 
-/* Vibe-safe hint (always on screen) */
+/* Subtle hint bottom-left */
 #hint {
   position: fixed;
+  bottom: 18px;
   left: 18px;
-  bottom: 16px;
   z-index: 11;
-  pointer-events: none;
-  color: rgba(255,255,255,0.42);
-  font-size: 11px;
-  letter-spacing: 0.28em;
+  font-size: 12px;
+  letter-spacing: 0.22em;
   text-transform: lowercase;
-  mix-blend-mode: overlay;
-  text-shadow: 0 0 10px rgba(255,255,255,0.06);
-  animation: breathe 2.8s ease-in-out infinite;
-  transition: opacity 700ms ease, transform 700ms ease;
-}
-
-@keyframes breathe {
-  0%, 100% { opacity: 0.40; }
-  50%      { opacity: 0.62; }
+  color: rgba(255,255,255,0.55);
+  opacity: 0.85;
+  transition: opacity 0.6s ease, transform 0.6s ease;
+  pointer-events: none;
 }
 
 .started #hint {
   opacity: 0;
   transform: translateY(6px);
 }
-
-/* Optional: tiny “tap” dot to make it feel intentional */
-#hintDot {
-  display: inline-block;
-  width: 6px;
-  height: 6px;
-  border-radius: 999px;
-  margin-right: 10px;
-  background: rgba(255,255,255,0.45);
-  box-shadow: 0 0 12px rgba(255,255,255,0.12);
-  transform: translateY(-1px);
-}
 </style>
 </head>
 
 <body>
+
   <video id="bg" autoplay muted loop playsinline preload="auto">
     <source src="background.mp4" type="video/mp4">
   </video>
@@ -158,11 +156,15 @@ html, body {
     <source src="song.mp3" type="audio/mpeg">
   </audio>
 
-  <div id="stage" aria-label="click to enable sound">
-    <div id="name">chris cant wait</div>
+  <div id="stage">
+    <div id="name-stack">
+      <div class="name top">chris cant wait</div>
+      <div class="name main">chris cant wait</div>
+      <div class="name bottom">chris cant wait</div>
+    </div>
   </div>
 
-  <div id="hint"><span id="hintDot"></span>click anywhere for sound</div>
+  <div id="hint">tap / click for sound</div>
 
 <script>
   const stage = document.getElementById("stage");
@@ -174,30 +176,29 @@ html, body {
   bg.addEventListener("loadeddata", tryPlayVideo);
   bg.addEventListener("canplay", tryPlayVideo);
 
-  function fadeIn(target=0.9, ms=900){
+  function fadeIn(target = 0.9, ms = 900) {
     music.volume = 0;
     const steps = 24;
     const stepMs = ms / steps;
     let i = 0;
     const t = setInterval(() => {
       i++;
-      music.volume = Math.min(target, (target/steps)*i);
-      if(i >= steps) clearInterval(t);
+      music.volume = Math.min(target, (target / steps) * i);
+      if (i >= steps) clearInterval(t);
     }, stepMs);
   }
 
-  async function startAudio(){
+  async function startAudio() {
     try {
       await music.play();
-      fadeIn(0.9, 900);
+      fadeIn();
       document.body.classList.add("started");
       stage.removeEventListener("click", startAudio);
-      stage.removeEventListener("touchstart", startAudio);
-    } catch(e) {}
+    } catch(e){}
   }
 
   stage.addEventListener("click", startAudio);
-  stage.addEventListener("touchstart", startAudio, { passive: true });
 </script>
+
 </body>
 </html>
