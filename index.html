@@ -23,6 +23,7 @@ html, body {
   height: 100%;
   object-fit: cover;
   z-index: 0;
+  background: #000;
   filter: brightness(0.78) contrast(1.05) saturate(0.95);
 }
 
@@ -40,7 +41,7 @@ html, body {
   inset: 0;
   z-index: 2;
   pointer-events: none;
-  opacity: 0.28;
+  opacity: 0.26;
   mix-blend-mode: overlay;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.95' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='260' height='260' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
   animation: noiseMove .9s steps(6) infinite;
@@ -60,7 +61,8 @@ html, body {
   inset: 0;
   z-index: 3;
   pointer-events: none;
-  opacity: 0.22;
+  opacity: 0.18;
+  mix-blend-mode: overlay;
   background: repeating-linear-gradient(
     to bottom,
     rgba(255,255,255,0.03),
@@ -70,47 +72,7 @@ html, body {
   );
 }
 
-/* Hint overlay */
-#hint {
-  position: fixed;
-  inset: 0;
-  z-index: 9;
-  pointer-events: none;
-  opacity: 0.75;
-  transition: opacity 700ms ease;
-}
-
-#hint::before {
-  content: "click anywhere for sound • click anywhere for sound • click anywhere for sound • ";
-  position: absolute;
-  inset: -30%;
-  color: rgba(255,255,255,0.55);
-  font-size: 16px;
-  letter-spacing: 0.26em;
-  text-transform: lowercase;
-  transform: rotate(-14deg);
-  white-space: pre;
-  line-height: 3.2;
-}
-
-#hint::after {
-  content: "click anywhere for sound • click anywhere for sound • click anywhere for sound • ";
-  position: absolute;
-  inset: -30%;
-  color: rgba(255,255,255,0.45);
-  font-size: 16px;
-  letter-spacing: 0.26em;
-  text-transform: lowercase;
-  transform: rotate(-14deg) translateY(140px);
-  white-space: pre;
-  line-height: 3.2;
-}
-
-.started #hint {
-  opacity: 0;
-}
-
-/* Stage */
+/* Click-anywhere stage */
 #stage {
   position: fixed;
   inset: 0;
@@ -121,16 +83,16 @@ html, body {
   user-select: none;
 }
 
-/* Name styling */
+/* Main name */
 #name {
-  color: rgba(255,255,255,0.97);
-  font-size: clamp(28px, 4vw, 48px);
-  letter-spacing: 0.14em;
+  color: rgba(255,255,255,0.96);
+  font-size: clamp(26px, 4vw, 44px);
+  letter-spacing: 0.12em;
   font-weight: 700;
   text-transform: lowercase;
   text-shadow:
-    0 0 28px rgba(255,255,255,0.18),
-    0 0 2px rgba(255,255,255,0.35);
+    0 0 28px rgba(255,255,255,0.14),
+    0 0 2px rgba(255,255,255,0.30);
   animation: titleJitter 9s infinite;
 }
 
@@ -141,11 +103,49 @@ html, body {
   96% { transform: translate(-0.6px, 0.5px); }
   97% { transform: translate(0,0); }
 }
+
+/* Vibe-safe hint (always on screen) */
+#hint {
+  position: fixed;
+  left: 18px;
+  bottom: 16px;
+  z-index: 11;
+  pointer-events: none;
+  color: rgba(255,255,255,0.42);
+  font-size: 11px;
+  letter-spacing: 0.28em;
+  text-transform: lowercase;
+  mix-blend-mode: overlay;
+  text-shadow: 0 0 10px rgba(255,255,255,0.06);
+  animation: breathe 2.8s ease-in-out infinite;
+  transition: opacity 700ms ease, transform 700ms ease;
+}
+
+@keyframes breathe {
+  0%, 100% { opacity: 0.40; }
+  50%      { opacity: 0.62; }
+}
+
+.started #hint {
+  opacity: 0;
+  transform: translateY(6px);
+}
+
+/* Optional: tiny “tap” dot to make it feel intentional */
+#hintDot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  margin-right: 10px;
+  background: rgba(255,255,255,0.45);
+  box-shadow: 0 0 12px rgba(255,255,255,0.12);
+  transform: translateY(-1px);
+}
 </style>
 </head>
 
 <body>
-
   <video id="bg" autoplay muted loop playsinline preload="auto">
     <source src="background.mp4" type="video/mp4">
   </video>
@@ -153,15 +153,16 @@ html, body {
   <div id="vignette"></div>
   <div id="noise"></div>
   <div id="scanlines"></div>
-  <div id="hint"></div>
 
   <audio id="music" loop preload="auto">
     <source src="song.mp3" type="audio/mpeg">
   </audio>
 
-  <div id="stage">
+  <div id="stage" aria-label="click to enable sound">
     <div id="name">chris cant wait</div>
   </div>
+
+  <div id="hint"><span id="hintDot"></span>click anywhere for sound</div>
 
 <script>
   const stage = document.getElementById("stage");
@@ -173,7 +174,7 @@ html, body {
   bg.addEventListener("loadeddata", tryPlayVideo);
   bg.addEventListener("canplay", tryPlayVideo);
 
-  function fadeIn(target = 0.9, ms = 900){
+  function fadeIn(target=0.9, ms=900){
     music.volume = 0;
     const steps = 24;
     const stepMs = ms / steps;
@@ -188,14 +189,15 @@ html, body {
   async function startAudio(){
     try {
       await music.play();
-      fadeIn();
+      fadeIn(0.9, 900);
       document.body.classList.add("started");
       stage.removeEventListener("click", startAudio);
-    } catch(e){}
+      stage.removeEventListener("touchstart", startAudio);
+    } catch(e) {}
   }
 
   stage.addEventListener("click", startAudio);
+  stage.addEventListener("touchstart", startAudio, { passive: true });
 </script>
-
 </body>
 </html>
