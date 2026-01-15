@@ -4,58 +4,31 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>chris cant wait</title>
-
   <style>
-    html, body{
-      margin:0;
-      width:100%;
-      height:100%;
-      overflow:hidden;
-      background:#000;
-      font-family: Helvetica, Arial, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-    }
+    html, body { margin:0; width:100%; height:100%; overflow:hidden; background:#000; }
 
-    /* Fullscreen video */
-    #bg{
-      position:fixed;
-      inset:0;
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      z-index:-5;
-      /* cinematic tuning */
-      filter: brightness(0.75) contrast(1.06) saturate(0.95);
-      transform: scale(1.02);
-      background:#000;
-    }
-
-    /* If video fails, we still look intentional */
     #fallback{
-      position:fixed;
-      inset:0;
-      z-index:-6;
-      background: radial-gradient(circle at 50% 35%, rgba(255,255,255,0.05), rgba(0,0,0,0.9));
+      position:fixed; inset:0; z-index:-6;
+      background: radial-gradient(circle at 50% 35%, rgba(255,255,255,0.06), rgba(0,0,0,0.92));
     }
 
-    /* subtle vignette */
+    #bg{
+      position:fixed; inset:0; z-index:-5;
+      width:100%; height:100%;
+      object-fit:cover;
+      transform:scale(1.02);
+      filter: brightness(0.78) contrast(1.06) saturate(0.95);
+      background:#000;
+    }
+
     #vignette{
-      position:fixed;
-      inset:0;
-      z-index:-4;
-      pointer-events:none;
-      background:
-        radial-gradient(circle at 50% 45%, rgba(0,0,0,0.12), rgba(0,0,0,0.78)),
-        linear-gradient(to bottom, rgba(0,0,0,0.25), rgba(0,0,0,0.62));
+      position:fixed; inset:0; z-index:-4; pointer-events:none;
+      background: radial-gradient(circle at 50% 45%, rgba(0,0,0,0.10), rgba(0,0,0,0.80));
     }
 
-    /* VHS noise */
     #noise{
-      position:fixed;
-      inset:0;
-      z-index:-3;
-      pointer-events:none;
-      opacity:0.20;
-      mix-blend-mode:overlay;
+      position:fixed; inset:0; z-index:-3; pointer-events:none;
+      opacity:0.22; mix-blend-mode:overlay;
       background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
       animation: noiseMove 5.4s steps(8) infinite;
     }
@@ -68,13 +41,9 @@
       100% { transform: translate(0,0); }
     }
 
-    /* scanlines */
     #scanlines{
-      position:fixed;
-      inset:0;
-      z-index:-2;
-      pointer-events:none;
-      opacity:0.14;
+      position:fixed; inset:0; z-index:-2; pointer-events:none;
+      opacity:0.14; mix-blend-mode:overlay;
       background: repeating-linear-gradient(
         to bottom,
         rgba(255,255,255,0.018),
@@ -82,78 +51,42 @@
         rgba(0,0,0,0) 6px,
         rgba(0,0,0,0) 10px
       );
-      mix-blend-mode:overlay;
     }
 
-    /* Stage: click anywhere to enable sound */
+    /* click-anywhere stage (for audio enable) */
     #stage{
-      position:fixed;
-      inset:0;
-      display:grid;
-      place-items:center;
-      cursor:pointer;
-      user-select:none;
+      position:fixed; inset:0;
+      display:grid; place-items:center;
+      cursor:pointer; user-select:none;
+      font-family: Helvetica, Arial, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     }
 
-    /* Subway bullets wordmark */
     .word{
       display:flex;
       gap:10px;
       flex-wrap:wrap;
       justify-content:center;
       align-items:center;
-      padding: 10px 14px;
     }
 
     .bullet{
-      width:42px;
-      height:42px;
-      border-radius:999px;
-      display:grid;
-      place-items:center;
-      color:#fff;
-      font-weight:700;
-      font-size:20px;
-      line-height:1;
-      letter-spacing:0;
-      /* crisp type look */
-      text-rendering: geometricPrecision;
-      -webkit-font-smoothing: antialiased;
+      width:42px; height:42px; border-radius:999px;
+      display:grid; place-items:center;
+      color:#fff; font-weight:800; font-size:20px;
       box-shadow: 0 10px 35px rgba(0,0,0,0.55);
-      /* slight “printed” feel */
-      filter: saturate(1.02);
     }
 
-    /* Space between words (no extra UI) */
-    .space{
-      width:18px;
-      height:1px;
-    }
+    .space{ width:18px; height:1px; }
 
-    /* Responsive */
     @media (max-width:520px){
       .bullet{ width:34px; height:34px; font-size:16px; }
       .word{ gap:8px; }
       .space{ width:12px; }
     }
-
-    /* Optional micro jitter to feel VHS (very subtle) */
-    .jitter{
-      animation: jitter 7s infinite;
-    }
-    @keyframes jitter{
-      0%, 92%, 100% { transform: translate(0,0); }
-      93% { transform: translate(0.8px, -0.4px); }
-      94% { transform: translate(0,0); }
-      96% { transform: translate(-0.7px, 0.5px); }
-      97% { transform: translate(0,0); }
-    }
-
-    /* No other text */
   </style>
 </head>
-
 <body>
+
   <div id="fallback"></div>
 
   <video id="bg" autoplay muted loop playsinline preload="auto">
@@ -169,28 +102,18 @@
   </audio>
 
   <div id="stage" aria-label="tap to enable sound">
-    <div class="word jitter" id="wordmark"></div>
+    <div class="word" id="wordmark"></div>
   </div>
 
   <script>
-    // --- Build "chris cant wait" as subway bullets ---
+    // Build subway-style colored bullets for "chris cant wait"
     const text = "chris cant wait";
-    const colors = [
-      "#0039A6", // blue (A/C/E)
-      "#FF6319", // orange (B/D/F/M)
-      "#00933C", // green (4/5/6)
-      "#FCCC0A", // yellow (N/Q/R/W)
-      "#A7A9AC", // gray (L)
-      "#EE352E", // red (1/2/3)
-      "#B933AD"  // purple (7)
-    ];
-
+    // classic MTA line colors
+    const palette = ["#0039A6","#FF6319","#FCCC0A","#00933C","#EE352E","#A7A9AC","#B933AD"];
     const container = document.getElementById("wordmark");
 
-    // color picker: deterministic but varied
     function colorForChar(ch, i){
-      const code = ch.charCodeAt(0);
-      return colors[(code + i) % colors.length];
+      return palette[(ch.charCodeAt(0) + i) % palette.length];
     }
 
     [...text].forEach((ch, i) => {
@@ -203,11 +126,18 @@
       const b = document.createElement("div");
       b.className = "bullet";
       b.style.background = colorForChar(ch, i);
-      b.textContent = ch; // lowercase letter inside circle
+      b.textContent = ch; // lowercase
       container.appendChild(b);
     });
 
-    // --- Audio: must start after user gesture ---
+    // Force video play attempt (muted autoplay should pass)
+    const bg = document.getElementById("bg");
+    bg.addEventListener("loadeddata", () => {
+      const p = bg.play();
+      if (p && p.catch) p.catch(() => {});
+    });
+
+    // Audio (must be user-initiated)
     const stage = document.getElementById("stage");
     const music = document.getElementById("music");
     let started = false;
@@ -237,14 +167,7 @@
 
     stage.addEventListener("click", startAudio);
     stage.addEventListener("touchstart", startAudio, { passive:true });
-
-    // --- Help video autoplay on some browsers by forcing play attempt ---
-    const bg = document.getElementById("bg");
-    bg.addEventListener("canplay", () => {
-      // try to play (it's muted so it should be allowed)
-      const p = bg.play();
-      if (p && typeof p.catch === "function") p.catch(() => {});
-    });
   </script>
+
 </body>
 </html>
