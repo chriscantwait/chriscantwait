@@ -7,11 +7,11 @@
 
   <style>
     :root{
-      --mint: rgba(158,251,231,0.92);
-      --mintSoft: rgba(158,251,231,0.42);
-      --ink: rgba(0,0,0,0.78);
-      --glass: rgba(0,0,0,0.42);
-      --glass2: rgba(0,0,0,0.58);
+      --text: rgba(245,245,245,0.92);
+      --muted: rgba(245,245,245,0.62);
+      --ink: rgba(0,0,0,0.62);
+      --glass: rgba(0,0,0,0.35);
+      --glass2: rgba(0,0,0,0.55);
     }
 
     html, body {
@@ -20,47 +20,46 @@
       height: 100%;
       overflow: hidden;
       background: #000;
-      color: var(--mint);
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
     }
 
-    /* Fullscreen video background */
-    #bgVideo {
+    /* Fullscreen background video */
+    #bgVideo{
       position: fixed;
       inset: 0;
       width: 100%;
       height: 100%;
       object-fit: cover;
       z-index: -5;
-      filter: brightness(0.52) contrast(1.08) saturate(0.88);
+      filter: brightness(0.62) contrast(1.06) saturate(0.92);
       transform: scale(1.02);
     }
 
     /* Cinematic vignette + haze */
-    #vignette {
+    #vignette{
       position: fixed;
       inset: 0;
       z-index: -4;
       pointer-events: none;
       background:
-        radial-gradient(circle at 50% 45%, rgba(0,0,0,0.05), rgba(0,0,0,0.72)),
-        linear-gradient(to bottom, rgba(0,0,0,0.45), rgba(0,0,0,0.65));
-      opacity: 1;
+        radial-gradient(circle at 50% 45%, rgba(0,0,0,0.12), rgba(0,0,0,0.72)),
+        linear-gradient(to bottom, rgba(0,0,0,0.35), rgba(0,0,0,0.65));
     }
 
-    /* Subtle film grain (CSS-only, lightweight) */
-    #grain {
+    /* Film grain (lightweight CSS) */
+    #grain{
       position: fixed;
       inset: 0;
       z-index: -3;
       pointer-events: none;
-      opacity: 0.14;
+      opacity: 0.16;
       background-image:
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
       mix-blend-mode: overlay;
-      animation: grainMove 6.5s steps(8) infinite;
+      animation: grainMove 6.2s steps(8) infinite;
     }
-    @keyframes grainMove {
+    @keyframes grainMove{
       0% { transform: translate(0,0); }
       20% { transform: translate(-2%, 1%); }
       40% { transform: translate(1%, -1%); }
@@ -69,87 +68,67 @@
       100% { transform: translate(0,0); }
     }
 
-    /* Scanlines */
-    #scanlines {
+    /* Optional scanlines (very subtle) */
+    #scanlines{
       position: fixed;
       inset: 0;
       z-index: -2;
       pointer-events: none;
+      opacity: 0.12;
       background: repeating-linear-gradient(
         to bottom,
-        rgba(255,255,255,0.025),
-        rgba(255,255,255,0.025) 1px,
-        rgba(0,0,0,0) 4px,
-        rgba(0,0,0,0) 7px
+        rgba(255,255,255,0.018),
+        rgba(255,255,255,0.018) 1px,
+        rgba(0,0,0,0) 5px,
+        rgba(0,0,0,0) 9px
       );
       mix-blend-mode: overlay;
-      opacity: 0.28;
     }
 
-    /* Soft “CRT glow” edges */
-    #crt {
-      position: fixed;
-      inset: 0;
-      z-index: -1;
-      pointer-events: none;
-      box-shadow: inset 0 0 120px rgba(0,0,0,0.75);
-    }
-
-    /* Start screen */
-    #startScreen {
+    /* Center layout */
+    .wrap{
       position: fixed;
       inset: 0;
       display: grid;
       place-items: center;
-      padding: 24px;
-      cursor: pointer;
-      user-select: none;
-    }
-
-    .startCard {
-      width: min(760px, 92vw);
-      border: 1px solid rgba(158,251,231,0.22);
-      border-radius: 22px;
-      background: linear-gradient(180deg, rgba(0,0,0,0.48), rgba(0,0,0,0.68));
-      backdrop-filter: blur(9px);
-      box-shadow: 0 18px 70px rgba(0,0,0,0.65);
-      padding: 22px 18px;
+      padding: 26px;
       text-align: center;
-      position: relative;
-      overflow: hidden;
     }
 
-    .startCard:before{
-      content:"";
-      position:absolute;
-      inset:-40%;
-      background: radial-gradient(circle at 30% 30%, rgba(158,251,231,0.10), rgba(0,0,0,0) 55%);
-      transform: rotate(10deg);
-      pointer-events:none;
+    .card{
+      width: min(760px, 92vw);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 22px;
+      background: linear-gradient(180deg, var(--glass), var(--glass2));
+      backdrop-filter: blur(10px);
+      box-shadow: 0 20px 80px rgba(0,0,0,0.55);
+      padding: 26px 20px 20px;
     }
 
-    .brand {
+    .kicker{
       letter-spacing: 5px;
-      font-size: 12px;
-      opacity: 0.75;
-      margin-bottom: 14px;
-    }
-
-    .headline {
-      font-size: 28px;
-      letter-spacing: 3px;
-      margin: 6px 0 10px;
+      font-size: 11px;
       text-transform: uppercase;
-    }
-
-    .sub {
-      font-size: 12px;
       opacity: 0.72;
-      line-height: 1.6;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
 
-    .startRow {
+    .name{
+      font-size: 30px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin: 6px 0 8px;
+    }
+
+    .tag{
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.6;
+      margin: 0 auto 18px;
+      max-width: 520px;
+    }
+
+    .row{
       display: flex;
       gap: 10px;
       justify-content: center;
@@ -158,149 +137,88 @@
       margin-top: 10px;
     }
 
-    .btn {
-      border: 1px solid rgba(158,251,231,0.28);
+    .btn{
+      border: 1px solid rgba(255,255,255,0.14);
       border-radius: 16px;
       padding: 12px 14px;
-      background: rgba(0,0,0,0.35);
-      color: var(--mint);
+      background: rgba(0,0,0,0.25);
+      color: var(--text);
       letter-spacing: 2px;
       font-size: 12px;
       text-transform: uppercase;
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
+      cursor: pointer;
+      user-select: none;
       transition: transform .15s ease, background .15s ease, border-color .15s ease;
-      will-change: transform;
     }
     .btn:hover{
       transform: translateY(-1px);
-      border-color: rgba(158,251,231,0.48);
-      background: rgba(0,0,0,0.48);
+      border-color: rgba(255,255,255,0.28);
+      background: rgba(0,0,0,0.35);
     }
 
-    .dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 99px;
-      background: rgba(158,251,231,0.82);
-      box-shadow: 0 0 14px rgba(158,251,231,0.35);
-      animation: pulse 1.2s infinite;
-    }
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); opacity: .85; }
-      50% { transform: scale(1.35); opacity: .45; }
-    }
-
-    .hint {
+    .links{
       margin-top: 14px;
-      font-size: 11px;
-      opacity: 0.65;
-      letter-spacing: 1px;
+      display: none; /* shown after audio starts */
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
     }
-
-    /* HUD + game */
-    #hud {
-      position: fixed;
-      top: 18px;
-      left: 18px;
-      display: none;
-      z-index: 5;
-      color: rgba(158,251,231,0.92);
-      font-size: 11px;
+    .links a{
+      color: rgba(255,255,255,0.78);
+      text-decoration: none;
+      font-size: 12px;
       letter-spacing: 2px;
       text-transform: uppercase;
-      background: rgba(0,0,0,0.34);
-      border: 1px solid rgba(158,251,231,0.20);
-      border-radius: 16px;
-      padding: 10px 12px;
-      backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(255,255,255,0.14);
+      padding-bottom: 3px;
+      transition: color .15s ease, border-color .15s ease;
+    }
+    .links a:hover{
+      color: rgba(255,255,255,0.95);
+      border-color: rgba(255,255,255,0.35);
     }
 
-    #mute {
+    .fineprint{
+      margin-top: 14px;
+      font-size: 11px;
+      letter-spacing: 1px;
+      color: rgba(255,255,255,0.55);
+    }
+
+    /* Top-right sound toggle (after start) */
+    #soundToggle{
       position: fixed;
       top: 18px;
       right: 18px;
       display: none;
-      z-index: 6;
-      border: 1px solid rgba(158,251,231,0.20);
+      border: 1px solid rgba(255,255,255,0.14);
       border-radius: 16px;
       padding: 10px 12px;
-      background: rgba(0,0,0,0.34);
-      backdrop-filter: blur(8px);
-      color: rgba(158,251,231,0.92);
+      background: rgba(0,0,0,0.30);
+      backdrop-filter: blur(10px);
+      color: rgba(255,255,255,0.80);
       font-size: 11px;
       letter-spacing: 2px;
       text-transform: uppercase;
       cursor: pointer;
       user-select: none;
+      z-index: 10;
     }
-    #mute:hover{ border-color: rgba(158,251,231,0.42); }
+    #soundToggle:hover{ border-color: rgba(255,255,255,0.28); }
 
-    #game {
-      position: fixed;
-      inset: 0;
-      display: none;
-      z-index: 1;
-    }
-
-    #player {
-      position: absolute;
-      width: 18px;
-      height: 18px;
-      border-radius: 5px;
-      background: rgba(158,251,231,0.92);
-      box-shadow: 0 0 18px rgba(158,251,231,0.35);
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-    }
-
-    .portal {
-      position: absolute;
-      width: 156px;
-      height: 44px;
-      border: 1px solid rgba(158,251,231,0.24);
-      border-radius: 16px;
-      display: grid;
-      place-items: center;
-      letter-spacing: 2px;
-      font-size: 11px;
-      text-transform: uppercase;
-      background: rgba(0,0,0,0.34);
-      backdrop-filter: blur(8px);
-      cursor: pointer;
-      transition: transform .15s ease, border-color .15s ease, background .15s ease;
-    }
-    .portal:hover{
-      transform: translateY(-1px);
-      border-color: rgba(158,251,231,0.52);
-      background: rgba(0,0,0,0.48);
-    }
-
-    /* Soft “glitch” flicker for portals */
-    .portal:after{
-      content:"";
+    /* Accessibility */
+    .sr{
       position:absolute;
-      inset:0;
-      border-radius: 16px;
-      background: linear-gradient(90deg, rgba(158,251,231,0.08), rgba(0,0,0,0), rgba(158,251,231,0.06));
-      opacity: 0;
-      pointer-events: none;
-      animation: flicker 5.8s infinite;
-    }
-    @keyframes flicker{
-      0%, 92%, 100% { opacity: 0; }
-      93% { opacity: .25; }
-      94% { opacity: 0; }
-      96% { opacity: .18; }
-      97% { opacity: 0; }
+      width:1px; height:1px;
+      padding:0; margin:-1px;
+      overflow:hidden;
+      clip:rect(0,0,0,0);
+      white-space:nowrap; border:0;
     }
 
-    /* Small screen adjustments */
     @media (max-width: 520px){
-      .headline{ font-size: 22px; }
-      .portal{ width: 140px; }
+      .name{ font-size: 24px; }
+      .tag{ font-size: 12px; }
     }
   </style>
 </head>
@@ -313,69 +231,44 @@
   <div id="vignette"></div>
   <div id="grain"></div>
   <div id="scanlines"></div>
-  <div id="crt"></div>
 
   <audio id="music" loop>
     <source src="song.mp3" type="audio/mpeg" />
   </audio>
 
-  <div id="startScreen" aria-label="Start">
-    <div class="startCard">
-      <div class="brand">CHRISCANTWAIT.COM</div>
-      <div class="headline">ENTER THE STATIC</div>
-      <div class="sub">
-        Tap once to enable sound.<br/>
-        Explore. Find portals. Don’t rush it.
+  <div id="soundToggle" aria-label="Toggle sound">Sound: On</div>
+
+  <div class="wrap">
+    <div class="card">
+      <div class="kicker">Anonymous Artist</div>
+      <div class="name">Chris Can’t Wait</div>
+      <p class="tag">A quiet corner of the internet. New music loading.</p>
+
+      <div class="row">
+        <button class="btn" id="enterBtn">Enter (Sound On)</button>
+        <button class="btn" id="muteBtn">Start Silent</button>
       </div>
 
-      <div class="startRow">
-        <div class="btn" id="startBtn"><span class="dot"></span> Begin</div>
-        <div class="btn" id="altBtn">Skip Game</div>
+      <div class="links" id="links">
+        <a href="https://instagram.com/" target="_blank" rel="noopener">Instagram</a>
+        <a href="https://open.spotify.com/" target="_blank" rel="noopener">Spotify</a>
+        <a href="https://soundcloud.com/" target="_blank" rel="noopener">SoundCloud</a>
       </div>
 
-      <div class="hint">Arrow keys / WASD • Mobile: drag • Sound toggles top-right</div>
+      <div class="fineprint">Tip: browsers require one tap to start audio.</div>
     </div>
   </div>
 
-  <div id="hud">Explore ▸ Find portals ▸ Click to open</div>
-  <div id="mute">Sound: On</div>
-
-  <div id="game">
-    <div id="player"></div>
-
-    <!-- Put these where they feel good -->
-    <div class="portal" id="p1" style="left: 9%; top: 72%;">Instagram</div>
-    <div class="portal" id="p2" style="left: 76%; top: 28%;">Spotify</div>
-    <div class="portal" id="p3" style="left: 42%; top: 16%;">SoundCloud</div>
-    <div class="portal" id="p4" style="left: 58%; top: 64%;">Email</div>
-  </div>
-
   <script>
-    const startScreen = document.getElementById("startScreen");
-    const startBtn = document.getElementById("startBtn");
-    const altBtn = document.getElementById("altBtn");
     const music = document.getElementById("music");
-    const game = document.getElementById("game");
-    const hud = document.getElementById("hud");
-    const muteBtn = document.getElementById("mute");
-    const player = document.getElementById("player");
+    const enterBtn = document.getElementById("enterBtn");
+    const muteBtn = document.getElementById("muteBtn");
+    const links = document.getElementById("links");
+    const soundToggle = document.getElementById("soundToggle");
 
-    // Your real links (update these)
-    const links = {
-      p1: "https://instagram.com/",
-      p2: "https://open.spotify.com/",
-      p3: "https://soundcloud.com/",
-      p4: "mailto:youremail@example.com"
-    };
+    let started = false;
+    let muted = false;
 
-    // Portal click handlers
-    Object.keys(links).forEach(id => {
-      const el = document.getElementById(id);
-      if (!el) return;
-      el.addEventListener("click", () => window.open(links[id], "_blank"));
-    });
-
-    // Smooth audio fade-in (feels pro)
     function fadeInAudio(target=0.9, ms=900){
       music.volume = 0;
       const steps = 24;
@@ -388,89 +281,35 @@
       }, stepMs);
     }
 
-    async function startExperience(showGame=true) {
-      startScreen.style.display = "none";
-      hud.style.display = "block";
-      muteBtn.style.display = "block";
-
-      if (showGame) game.style.display = "block";
+    async function startAudio(withSound=true){
+      started = true;
+      muted = !withSound;
+      music.muted = muted;
 
       try {
         await music.play();
-        fadeInAudio(0.9, 900);
-      } catch (e) {
-        // If iOS blocks the first attempt, user can tap again and it will work.
+        if (withSound) fadeInAudio(0.9, 900);
+      } catch(e) {
+        // If iOS blocks first attempt, user can tap again.
         console.log("Audio blocked until another gesture:", e);
       }
+
+      links.style.display = "flex";
+      soundToggle.style.display = "block";
+      soundToggle.textContent = muted ? "Sound: Off" : "Sound: On";
     }
 
-    // Start triggers
-    startBtn.addEventListener("click", () => startExperience(true));
-    altBtn.addEventListener("click", () => startExperience(false));
-    startScreen.addEventListener("click", (e) => {
-      // clicking anywhere on the card also starts (but not when clicking buttons)
-      if (e.target === startScreen) startExperience(true);
-    });
+    enterBtn.addEventListener("click", () => startAudio(true));
+    muteBtn.addEventListener("click", () => startAudio(false));
 
-    // Mute toggle
-    let isMuted = false;
-    muteBtn.addEventListener("click", async () => {
-      isMuted = !isMuted;
-      music.muted = isMuted;
-      muteBtn.textContent = isMuted ? "Sound: Off" : "Sound: On";
-      if (!isMuted) {
+    soundToggle.addEventListener("click", async () => {
+      if (!started) return;
+      muted = !muted;
+      music.muted = muted;
+      soundToggle.textContent = muted ? "Sound: Off" : "Sound: On";
+      if (!muted) {
         try { await music.play(); } catch(e) {}
       }
-    });
-
-    // Movement (smoother feel)
-    let x = window.innerWidth / 2;
-    let y = window.innerHeight / 2;
-    const speed = 3.2; // smaller, smoother
-    const keys = new Set();
-
-    function clamp() {
-      x = Math.max(10, Math.min(window.innerWidth - 10, x));
-      y = Math.max(10, Math.min(window.innerHeight - 10, y));
-    }
-
-    function render() {
-      player.style.left = x + "px";
-      player.style.top = y + "px";
-    }
-    render();
-
-    document.addEventListener("keydown", (e) => keys.add(e.key.toLowerCase()));
-    document.addEventListener("keyup", (e) => keys.delete(e.key.toLowerCase()));
-
-    function tick(){
-      if (keys.has("arrowup") || keys.has("w")) y -= speed * 6;
-      if (keys.has("arrowdown") || keys.has("s")) y += speed * 6;
-      if (keys.has("arrowleft") || keys.has("a")) x -= speed * 6;
-      if (keys.has("arrowright") || keys.has("d")) x += speed * 6;
-
-      clamp();
-      render();
-      requestAnimationFrame(tick);
-    }
-    requestAnimationFrame(tick);
-
-    // Mobile drag
-    let dragging = false;
-    game.addEventListener("touchstart", () => dragging = true, { passive: true });
-    game.addEventListener("touchend", () => dragging = false, { passive: true });
-    game.addEventListener("touchmove", (e) => {
-      if (!dragging) return;
-      const t = e.touches[0];
-      x = t.clientX;
-      y = t.clientY;
-      clamp();
-      render();
-    }, { passive: true });
-
-    window.addEventListener("resize", () => {
-      clamp();
-      render();
     });
   </script>
 </body>
