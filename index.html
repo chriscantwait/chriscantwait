@@ -8,7 +8,6 @@
 <style>
   html, body { margin:0; width:100%; height:100%; overflow:hidden; background:#000; }
 
-  /* Background video */
   #bg{
     position:fixed; inset:0;
     width:100%; height:100%;
@@ -18,7 +17,6 @@
     background:#000;
   }
 
-  /* VHS overlays */
   #vignette{ position:fixed; inset:0; z-index:1; pointer-events:none;
     background: radial-gradient(circle at 50% 45%, rgba(0,0,0,0.08), rgba(0,0,0,0.82));
   }
@@ -43,7 +41,6 @@
     );
   }
 
-  /* Only text, click-anywhere */
   #stage{
     position:fixed; inset:0;
     display:grid; place-items:center;
@@ -51,6 +48,7 @@
     cursor:pointer; user-select:none;
     font-family: Helvetica, Arial, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   }
+
   #name{
     color: rgba(255,255,255,0.92);
     font-size: 22px;
@@ -58,7 +56,7 @@
     text-shadow: 0 0 14px rgba(255,255,255,0.12);
   }
 
-  /* Hide SoundCloud iframe off-screen */
+  /* Hide SoundCloud iframe */
   #scWrap{
     position:fixed;
     left:-9999px;
@@ -74,14 +72,13 @@
 <body>
 
   <video id="bg" autoplay muted loop playsinline preload="auto">
-    <source src="background.mp4?v=9" type="video/mp4">
+    <source src="background.mp4?v=10" type="video/mp4">
   </video>
 
   <div id="vignette"></div>
   <div id="noise"></div>
   <div id="scanlines"></div>
 
-  <!-- SoundCloud hidden player -->
   <div id="scWrap">
     <iframe
       id="scPlayer"
@@ -90,7 +87,7 @@
       scrolling="no"
       frameborder="no"
       allow="autoplay"
-      src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/mannoofficial/sets/brooklyn-outlaw/s-ih767gVzDLS&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&visual=false">
+      src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2Fmannoofficial%2Fsets%2Fbrooklyn-outlaw%2Fs-ih767gVzDLS&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&visual=false">
     </iframe>
   </div>
 
@@ -103,8 +100,6 @@
     const bg = document.getElementById("bg");
     const stage = document.getElementById("stage");
     const scIframe = document.getElementById("scPlayer");
-
-    // Create widget
     const widget = SC.Widget(scIframe);
 
     // Keep video playing
@@ -113,26 +108,58 @@
     bg.addEventListener("loadeddata", tryPlayVideo);
     bg.addEventListener("canplay", tryPlayVideo);
 
-    // Start SoundCloud ONLY after click (required)
-    function startSound(){
-      // Try to start playing the set
-      widget.play();
+    let scReady = false;
+    let started = false;
 
-      // Optional: set volume (0–100). Some browsers may ignore until playback starts.
+    widget.bind(SC.Widget.Events.READY, () => {
+      scReady = true;
+      // Pre-set volume; actual effect happens once playing
       widget.setVolume(80);
+      console.log("SC READY");
+    });
 
-      // Remove handlers so it doesn't spam play()
-      stage.removeEventListener("click", startSound);
-      stage.removeEventListener("touchstart", startSound);
+    widget.bind(SC.Widget.Events.ERROR, (e) => {
+      console.log("SC ERROR", e);
+    });
+
+    async function startSound(){
+      if (started) return;
+      started = true;
+
+      // video sometimes starts after gesture too
+      tryPlayVideo();
+
+      // If widget isn't ready yet, wait a moment, then try
+      const attemptPlay = () => {
+        try {
+          widget.play();
+          widget.setVolume(80);
+          console.log("SC PLAY ATTEMPT");
+        } catch(e) {
+          console.log("SC PLAY FAIL", e);
+        }
+      };
+
+      if (scReady) {
+        attemptPlay();
+      } else {
+        // wait up to ~2 seconds for READY
+        let tries = 0;
+        const t = setInterval(() => {
+          tries++;
+          if (scReady || tries >= 20) {
+            clearInterval(t);
+            attemptPlay();
+          }
+        }, 100);
+      }
+
+      // If SC stalls, let user click again to retry
+      setTimeout(() => { started = false; }, 1500);
     }
 
     stage.addEventListener("click", startSound);
     stage.addEventListener("touchstart", startSound, { passive: true });
-
-    // Debug (optional): if it fails, you can watch console messages
-    widget.bind(SC.Widget.Events.READY, () => console.log("SC READY"));
-    widget.bind(SC.Widget.Events.PLAY, () => console.log("SC PLAYING"));
-    widget.bind(SC.Widget.Events.ERROR, (e) => console.log("SC ERROR", e));
   </script>
 
 </body>
