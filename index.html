@@ -6,162 +6,146 @@
 <title>chris cant wait</title>
 
 <style>
-  html, body {
-    margin: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    background: #000;
-  }
+html, body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #000;
+  font-family: Helvetica, Arial, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
 
-  /* Background video */
-  #bg {
-    position: fixed;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    z-index: 0;
-    background: #000;
-    filter: brightness(0.78) contrast(1.05) saturate(0.95);
-  }
+/* Background video */
+#bg {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+  filter: brightness(0.78) contrast(1.05) saturate(0.95);
+}
 
-  /* VHS overlays */
-  #vignette {
-    position: fixed;
-    inset: 0;
-    z-index: 1;
-    pointer-events: none;
-    background: radial-gradient(circle at 50% 45%, rgba(0,0,0,0.08), rgba(0,0,0,0.82));
-  }
+/* VHS overlays */
+#vignette {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 45%, rgba(0,0,0,0.08), rgba(0,0,0,0.82));
+}
 
-  #noise {
-    position: fixed;
-    inset: 0;
-    z-index: 2;
-    pointer-events: none;
-    opacity: 0.28;
-    mix-blend-mode: overlay;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.95' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='260' height='260' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
-    animation: noiseMove .9s steps(6) infinite;
-  }
-  @keyframes noiseMove {
-    0% { transform: translate(0,0); }
-    20% { transform: translate(-1%, .5%); }
-    40% { transform: translate(.6%, -.6%); }
-    60% { transform: translate(1%, .8%); }
-    80% { transform: translate(-.6%, -.8%); }
-    100% { transform: translate(0,0); }
-  }
+#noise {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0.28;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.95' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='260' height='260' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
+  animation: noiseMove .9s steps(6) infinite;
+}
 
-  #scanlines {
-    position: fixed;
-    inset: 0;
-    z-index: 3;
-    pointer-events: none;
-    opacity: 0.22;
-    mix-blend-mode: overlay;
-    background: repeating-linear-gradient(
-      to bottom,
-      rgba(255,255,255,0.03),
-      rgba(255,255,255,0.03) 1px,
-      rgba(0,0,0,0) 4px,
-      rgba(0,0,0,0) 8px
-    );
-  }
+@keyframes noiseMove {
+  0% { transform: translate(0,0); }
+  20% { transform: translate(-1%, .5%); }
+  40% { transform: translate(.6%, -.6%); }
+  60% { transform: translate(1%, .8%); }
+  80% { transform: translate(-.6%, -.8%); }
+  100% { transform: translate(0,0); }
+}
 
-  /* Click-anywhere stage */
-  #stage {
-    position: fixed;
-    inset: 0;
-    display: grid;
-    place-items: center;
-    z-index: 10;
-    cursor: pointer;
-    user-select: none;
-    font-family: Helvetica, Arial, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  }
+#scanlines {
+  position: fixed;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  opacity: 0.22;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.03),
+    rgba(255,255,255,0.03) 1px,
+    rgba(0,0,0,0) 4px,
+    rgba(0,0,0,0) 8px
+  );
+}
 
-  /* MAIN NAME (more appealing) */
-  #name {
-    color: rgba(255,255,255,0.94);
-    font-size: clamp(22px, 3vw, 34px);
-    text-transform: lowercase;
-    letter-spacing: 0.06em;   /* more “designed” */
-    font-weight: 600;
-    text-shadow:
-      0 0 18px rgba(255,255,255,0.10),
-      0 0 2px rgba(255,255,255,0.18);
-    transform: translateZ(0);
-    animation: titleJitter 9s infinite;
-  }
+/* Hint overlay */
+#hint {
+  position: fixed;
+  inset: 0;
+  z-index: 9;
+  pointer-events: none;
+  opacity: 0.75;
+  transition: opacity 700ms ease;
+}
 
-  /* subtle VHS jitter */
-  @keyframes titleJitter{
-    0%, 92%, 100% { transform: translate(0,0); }
-    93% { transform: translate(0.7px, -0.4px); }
-    94% { transform: translate(0,0); }
-    96% { transform: translate(-0.6px, 0.5px); }
-    97% { transform: translate(0,0); }
-  }
+#hint::before {
+  content: "click anywhere for sound • click anywhere for sound • click anywhere for sound • ";
+  position: absolute;
+  inset: -30%;
+  color: rgba(255,255,255,0.55);
+  font-size: 16px;
+  letter-spacing: 0.26em;
+  text-transform: lowercase;
+  transform: rotate(-14deg);
+  white-space: pre;
+  line-height: 3.2;
+}
 
-  /* Playful repeating hint overlay */
-  #hint {
-    position: fixed;
-    inset: 0;
-    z-index: 9;              /* under the name, above video */
-    pointer-events: none;    /* still lets clicks through */
-    opacity: 0.34;
-    transition: opacity 700ms ease;
-    mix-blend-mode: overlay;
-  }
+#hint::after {
+  content: "click anywhere for sound • click anywhere for sound • click anywhere for sound • ";
+  position: absolute;
+  inset: -30%;
+  color: rgba(255,255,255,0.45);
+  font-size: 16px;
+  letter-spacing: 0.26em;
+  text-transform: lowercase;
+  transform: rotate(-14deg) translateY(140px);
+  white-space: pre;
+  line-height: 3.2;
+}
 
-  /* A tiled watermark effect */
-  #hint::before{
-    content: "click anywhere for sound • click anywhere for sound • ";
-    position: absolute;
-    inset: -20%;
-    display: block;
-    color: rgba(255,255,255,0.35);
-    font-size: 12px;
-    letter-spacing: 0.22em;
-    text-transform: lowercase;
-    transform: rotate(-14deg);
-    white-space: pre;
-    line-height: 3.2;
-    /* repeat the line to fill the screen */
-    background: transparent;
-    text-shadow: 0 0 10px rgba(255,255,255,0.05);
-  }
+.started #hint {
+  opacity: 0;
+}
 
-  /* We fake repetition by using multiple layered copies */
-  #hint::after{
-    content: "click anywhere for sound • click anywhere for sound • ";
-    position: absolute;
-    inset: -20%;
-    display: block;
-    color: rgba(255,255,255,0.28);
-    font-size: 12px;
-    letter-spacing: 0.22em;
-    text-transform: lowercase;
-    transform: rotate(-14deg) translateY(120px);
-    white-space: pre;
-    line-height: 3.2;
-    text-shadow: 0 0 10px rgba(255,255,255,0.05);
-  }
+/* Stage */
+#stage {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  z-index: 10;
+  cursor: pointer;
+  user-select: none;
+}
 
-  /* When audio starts, fade hint away */
-  .started #hint { opacity: 0; }
+/* Name styling */
+#name {
+  color: rgba(255,255,255,0.97);
+  font-size: clamp(28px, 4vw, 48px);
+  letter-spacing: 0.14em;
+  font-weight: 700;
+  text-transform: lowercase;
+  text-shadow:
+    0 0 28px rgba(255,255,255,0.18),
+    0 0 2px rgba(255,255,255,0.35);
+  animation: titleJitter 9s infinite;
+}
 
-  /* Mobile tune */
-  @media (max-width: 520px){
-    #hint { opacity: 0.28; }
-    #hint::before, #hint::after { font-size: 11px; }
-  }
+@keyframes titleJitter {
+  0%, 92%, 100% { transform: translate(0,0); }
+  93% { transform: translate(0.8px, -0.4px); }
+  94% { transform: translate(0,0); }
+  96% { transform: translate(-0.6px, 0.5px); }
+  97% { transform: translate(0,0); }
+}
 </style>
 </head>
 
 <body>
+
   <video id="bg" autoplay muted loop playsinline preload="auto">
     <source src="background.mp4" type="video/mp4">
   </video>
@@ -169,54 +153,49 @@
   <div id="vignette"></div>
   <div id="noise"></div>
   <div id="scanlines"></div>
-
-  <!-- playful hint overlay -->
-  <div id="hint" aria-hidden="true"></div>
+  <div id="hint"></div>
 
   <audio id="music" loop preload="auto">
     <source src="song.mp3" type="audio/mpeg">
   </audio>
 
-  <div id="stage" aria-label="click to enable sound">
+  <div id="stage">
     <div id="name">chris cant wait</div>
   </div>
 
-  <script>
-    const stage = document.getElementById("stage");
-    const music = document.getElementById("music");
-    const bg = document.getElementById("bg");
+<script>
+  const stage = document.getElementById("stage");
+  const music = document.getElementById("music");
+  const bg = document.getElementById("bg");
 
-    function tryPlayVideo() { bg.play().catch(() => {}); }
-    tryPlayVideo();
-    bg.addEventListener("loadeddata", tryPlayVideo);
-    bg.addEventListener("canplay", tryPlayVideo);
+  function tryPlayVideo(){ bg.play().catch(()=>{}); }
+  tryPlayVideo();
+  bg.addEventListener("loadeddata", tryPlayVideo);
+  bg.addEventListener("canplay", tryPlayVideo);
 
-    function fadeInAudio(target = 0.9, ms = 900) {
-      music.volume = 0;
-      const steps = 24;
-      const stepMs = ms / steps;
-      let i = 0;
-      const t = setInterval(() => {
-        i++;
-        music.volume = Math.min(target, (target / steps) * i);
-        if (i >= steps) clearInterval(t);
-      }, stepMs);
-    }
+  function fadeIn(target = 0.9, ms = 900){
+    music.volume = 0;
+    const steps = 24;
+    const stepMs = ms / steps;
+    let i = 0;
+    const t = setInterval(() => {
+      i++;
+      music.volume = Math.min(target, (target/steps)*i);
+      if(i >= steps) clearInterval(t);
+    }, stepMs);
+  }
 
-    async function startAudio() {
-      try {
-        await music.play();
-        fadeInAudio(0.9, 900);
-        document.body.classList.add("started"); // fades hint out
-        stage.removeEventListener("click", startAudio);
-        stage.removeEventListener("touchstart", startAudio);
-      } catch (e) {
-        // if blocked, click again
-      }
-    }
+  async function startAudio(){
+    try {
+      await music.play();
+      fadeIn();
+      document.body.classList.add("started");
+      stage.removeEventListener("click", startAudio);
+    } catch(e){}
+  }
 
-    stage.addEventListener("click", startAudio);
-    stage.addEventListener("touchstart", startAudio, { passive: true });
-  </script>
+  stage.addEventListener("click", startAudio);
+</script>
+
 </body>
 </html>
