@@ -60,7 +60,7 @@ html, body {
   object-fit: cover;
 }
 
-/* FLASH layer (starts invisible, pulses in occasionally) */
+/* FLASH layer */
 #portraitFlash {
   position: fixed;
   inset: 0;
@@ -69,7 +69,7 @@ html, body {
   pointer-events: none;
   will-change: opacity, transform, filter;
   transform: scale(1.01);
-  filter: brightness(1.02) contrast(1.08) saturate(1.02);
+  filter: brightness(1.03) contrast(1.10) saturate(1.04);
 }
 #portraitFlash img {
   width: 100%;
@@ -77,17 +77,22 @@ html, body {
   object-fit: cover;
 }
 
-/* When flash is active, we animate it */
+/* Two-pulse editorial flash (visible but classy) */
 .flash-on #portraitFlash{
-  animation: flashPulse 420ms ease-out 1;
+  animation: flashPulse2 720ms ease-out 1;
 }
 
-/* The actual editorial flash: quick rise, soft fall */
-@keyframes flashPulse {
-  0%   { opacity: 0;   transform: scale(1.01) translateY(0px); }
-  22%  { opacity: 0.14; transform: scale(1.02) translateY(-2px); }
-  55%  { opacity: 0.09; transform: scale(1.02) translateY(-1px); }
-  100% { opacity: 0;   transform: scale(1.01) translateY(0px); }
+@keyframes flashPulse2 {
+  /* pulse 1 */
+  0%   { opacity: 0;    transform: scale(1.01); }
+  12%  { opacity: 0.22; transform: scale(1.02); }
+  28%  { opacity: 0.00; transform: scale(1.01); }
+
+  /* pulse 2 */
+  45%  { opacity: 0.18; transform: scale(1.02); }
+  62%  { opacity: 0.00; transform: scale(1.01); }
+
+  100% { opacity: 0;    transform: scale(1.01); }
 }
 
 /* Center title */
@@ -155,7 +160,6 @@ svg { width: 100%; height: 100%; }
 .ig svg { fill: url(#igGradient); }
 .sc svg { fill: #ff5500; }
 
-/* Mobile tune */
 @media (max-width: 520px){
   .name { font-size: clamp(24px, 7vw, 40px); }
   #socials a { width: 26px; height: 26px; }
@@ -165,7 +169,6 @@ svg { width: 100%; height: 100%; }
 
 <body>
 
-<!-- Background video -->
 <video id="bg" autoplay muted loop playsinline>
   <source src="background.mp4" type="video/mp4">
 </video>
@@ -173,22 +176,18 @@ svg { width: 100%; height: 100%; }
 <div id="vignette"></div>
 <div id="grain"></div>
 
-<!-- Portrait base -->
 <div id="portraitBase">
   <img src="portrait.jpg" alt="">
 </div>
 
-<!-- Portrait flash -->
 <div id="portraitFlash" aria-hidden="true">
   <img src="portrait.jpg" alt="">
 </div>
 
-<!-- Audio -->
 <audio id="music" loop>
   <source src="song.mp3" type="audio/mpeg">
 </audio>
 
-<!-- Title -->
 <div id="stage" aria-label="click to enable sound">
   <div id="name-stack">
     <div class="name faint">chris cant wait</div>
@@ -199,9 +198,7 @@ svg { width: 100%; height: 100%; }
 
 <div id="hint">tap / click for sound</div>
 
-<!-- Social icons -->
 <div id="socials">
-  <!-- Instagram -->
   <a class="ig" href="https://www.instagram.com/chriscantwait" target="_blank" rel="noopener" aria-label="Instagram">
     <svg viewBox="0 0 24 24">
       <defs>
@@ -215,7 +212,6 @@ svg { width: 100%; height: 100%; }
     </svg>
   </a>
 
-  <!-- SoundCloud -->
   <a class="sc" href="https://soundcloud.com/chriscantwait" target="_blank" rel="noopener" aria-label="SoundCloud">
     <svg viewBox="0 0 24 24">
       <path d="M17.5 10.5a4.5 4.5 0 00-8.8 1.3A3.7 3.7 0 009 19h8.5a3.5 3.5 0 000-7zM6 19V9l-1-.3V19h1zm-2 0V8.6l-1-.4V19h1zm4 0V9.4l-1-.2V19h1z"/>
@@ -238,34 +234,21 @@ function fadeIn(){
   }, 30);
 }
 
-let started = false;
-
 async function startAudio(){
   try {
     await music.play();
     fadeIn();
-    started = true;
     document.body.classList.add("started");
     stage.removeEventListener("click", startAudio);
   } catch(e){}
 }
-
 stage.addEventListener("click", startAudio);
 
-// ===== Editorial flash timing =====
-// Randomized interval so it feels organic.
-function scheduleFlash(){
-  const min = 9000;   // 9s
-  const max = 16000;  // 16s
-  const delay = Math.floor(min + Math.random() * (max - min));
-  setTimeout(() => {
-    document.body.classList.add("flash-on");
-    // remove class after animation completes
-    setTimeout(() => document.body.classList.remove("flash-on"), 500);
-    scheduleFlash();
-  }, delay);
-}
-scheduleFlash();
+// Flash every 8 seconds (synced with your loop)
+setInterval(() => {
+  document.body.classList.add("flash-on");
+  setTimeout(() => document.body.classList.remove("flash-on"), 760);
+}, 8000);
 </script>
 
 </body>
