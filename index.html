@@ -32,7 +32,7 @@ html, body {
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  background: radial-gradient(circle at 50% 45%, rgba(0,0,0,0.04), rgba(0,0,0,0.50));
+  background: radial-gradient(circle at 50% 45%, rgba(0,0,0,0.03), rgba(0,0,0,0.55));
 }
 
 /* Light grain */
@@ -45,14 +45,13 @@ html, body {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='1'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='.3'/%3E%3C/svg%3E");
 }
 
-/* Portrait base layer (very subtle, always there) */
+/* Portrait base */
 #portraitBase {
   position: fixed;
   inset: 0;
   z-index: 3;
-  opacity: 0.10;
+  opacity: 0.12;
   pointer-events: none;
-  filter: brightness(0.95) contrast(1.05);
 }
 #portraitBase img {
   width: 100%;
@@ -60,16 +59,16 @@ html, body {
   object-fit: cover;
 }
 
-/* FLASH layer */
+/* Flash layer */
 #portraitFlash {
   position: fixed;
   inset: 0;
   z-index: 4;
   opacity: 0;
   pointer-events: none;
-  will-change: opacity, transform, filter;
+  will-change: opacity, transform;
   transform: scale(1.01);
-  filter: brightness(1.03) contrast(1.10) saturate(1.04);
+  filter: brightness(1.05) contrast(1.12);
 }
 #portraitFlash img {
   width: 100%;
@@ -77,25 +76,21 @@ html, body {
   object-fit: cover;
 }
 
-/* Two-pulse editorial flash (visible but classy) */
-.flash-on #portraitFlash{
-  animation: flashPulse2 720ms ease-out 1;
+/* Flash animation */
+.flash-on #portraitFlash {
+  animation: flashPulse 800ms ease-out 1;
 }
 
-@keyframes flashPulse2 {
-  /* pulse 1 */
-  0%   { opacity: 0;    transform: scale(1.01); }
-  12%  { opacity: 0.22; transform: scale(1.02); }
-  28%  { opacity: 0.00; transform: scale(1.01); }
-
-  /* pulse 2 */
-  45%  { opacity: 0.18; transform: scale(1.02); }
-  62%  { opacity: 0.00; transform: scale(1.01); }
-
-  100% { opacity: 0;    transform: scale(1.01); }
+@keyframes flashPulse {
+  0%   { opacity: 0; }
+  15%  { opacity: 0.38; transform: scale(1.02); }
+  30%  { opacity: 0; }
+  50%  { opacity: 0.32; transform: scale(1.02); }
+  70%  { opacity: 0; }
+  100% { opacity: 0; }
 }
 
-/* Center title */
+/* Center stage */
 #stage {
   position: fixed;
   inset: 0;
@@ -114,14 +109,16 @@ html, body {
 }
 
 .name {
-  font-size: clamp(32px, 4vw, 56px);
+  font-size: clamp(32px, 4vw, 58px);
   letter-spacing: 0.16em;
   font-weight: 500;
   text-transform: lowercase;
   color: rgba(255,255,255,0.96);
 }
 
-.name.faint { opacity: 0.45; }
+.name.faint {
+  opacity: 0.45;
+}
 
 /* Hint */
 #hint {
@@ -134,7 +131,10 @@ html, body {
   z-index: 20;
   transition: opacity .5s ease;
 }
-.started #hint { opacity: 0; }
+
+.started #hint {
+  opacity: 0;
+}
 
 /* Socials */
 #socials {
@@ -153,7 +153,11 @@ html, body {
   opacity: 0.92;
   transition: transform .2s ease, opacity .2s ease;
 }
-#socials a:hover { transform: translateY(-2px); opacity: 1; }
+
+#socials a:hover {
+  transform: translateY(-2px);
+  opacity: 1;
+}
 
 svg { width: 100%; height: 100%; }
 
@@ -161,14 +165,14 @@ svg { width: 100%; height: 100%; }
 .sc svg { fill: #ff5500; }
 
 @media (max-width: 520px){
-  .name { font-size: clamp(24px, 7vw, 40px); }
-  #socials a { width: 26px; height: 26px; }
+  .name { font-size: clamp(24px, 7vw, 42px); }
 }
 </style>
 </head>
 
 <body>
 
+<!-- Video -->
 <video id="bg" autoplay muted loop playsinline>
   <source src="background.mp4" type="video/mp4">
 </video>
@@ -176,19 +180,22 @@ svg { width: 100%; height: 100%; }
 <div id="vignette"></div>
 <div id="grain"></div>
 
+<!-- Portrait -->
 <div id="portraitBase">
   <img src="portrait.jpg" alt="">
 </div>
 
-<div id="portraitFlash" aria-hidden="true">
+<div id="portraitFlash">
   <img src="portrait.jpg" alt="">
 </div>
 
+<!-- Audio -->
 <audio id="music" loop>
   <source src="song.mp3" type="audio/mpeg">
 </audio>
 
-<div id="stage" aria-label="click to enable sound">
+<!-- Text -->
+<div id="stage">
   <div id="name-stack">
     <div class="name faint">chris cant wait</div>
     <div class="name">chris cant wait</div>
@@ -198,8 +205,9 @@ svg { width: 100%; height: 100%; }
 
 <div id="hint">tap / click for sound</div>
 
+<!-- Socials -->
 <div id="socials">
-  <a class="ig" href="https://www.instagram.com/chriscantwait" target="_blank" rel="noopener" aria-label="Instagram">
+  <a class="ig" href="https://www.instagram.com/chriscantwait" target="_blank">
     <svg viewBox="0 0 24 24">
       <defs>
         <linearGradient id="igGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -212,7 +220,7 @@ svg { width: 100%; height: 100%; }
     </svg>
   </a>
 
-  <a class="sc" href="https://soundcloud.com/chriscantwait" target="_blank" rel="noopener" aria-label="SoundCloud">
+  <a class="sc" href="https://soundcloud.com/chriscantwait" target="_blank">
     <svg viewBox="0 0 24 24">
       <path d="M17.5 10.5a4.5 4.5 0 00-8.8 1.3A3.7 3.7 0 009 19h8.5a3.5 3.5 0 000-7zM6 19V9l-1-.3V19h1zm-2 0V8.6l-1-.4V19h1zm4 0V9.4l-1-.2V19h1z"/>
     </svg>
@@ -223,7 +231,6 @@ svg { width: 100%; height: 100%; }
 const stage = document.getElementById("stage");
 const music = document.getElementById("music");
 
-// Audio fade-in
 function fadeIn(){
   music.volume = 0;
   let v = 0;
@@ -244,10 +251,15 @@ async function startAudio(){
 }
 stage.addEventListener("click", startAudio);
 
-// Flash every 8 seconds (synced with your loop)
-setInterval(() => {
+// FLASH TWICE PER 8s LOOP
+function triggerFlash(){
   document.body.classList.add("flash-on");
-  setTimeout(() => document.body.classList.remove("flash-on"), 760);
+  setTimeout(() => document.body.classList.remove("flash-on"), 900);
+}
+
+setInterval(() => {
+  setTimeout(triggerFlash, 2000);  // flash #1
+  setTimeout(triggerFlash, 6000);  // flash #2
 }, 8000);
 </script>
 
